@@ -4,6 +4,11 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
     "bootstrap": "^4.5.3",
-    "jquery": "^3.5.1"
+    "gridjs": "^3.0.2",
+    "jquery": "^3.5.1",
+    "jquery-ui-dist": "^1.12.1"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.13"
   }
 }

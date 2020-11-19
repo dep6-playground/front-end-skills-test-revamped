@@ -43,10 +43,13 @@ var MAX_PAGES = 3;
 init();
 
 function init() {
-    txtId = document.getElementById('txt-id');
-    txtName = document.getElementById('txt-name');
-    txtAddress = document.getElementById('txt-address');
-    tblCustomers = document.getElementById('tbl-customers');
+    txtId = $('#txt-id');
+    txtName = $('#txt-name');
+    txtAddress = $('#txt-address');
+    tblCustomers = $('#tbl-customers');
+
+
+
 
     txtId.focus();
 }
@@ -57,9 +60,9 @@ function init() {
 
 document.getElementById('btn-save').addEventListener('click', handleSave);
 document.addEventListener('click', handleClickEventDelegation);
-txtId.addEventListener('input', handleInput)
-txtName.addEventListener('input', handleInput)
-txtAddress.addEventListener('input', handleInput)
+txtId.on('input',handleInput);
+txtName.on('input', handleInput);
+txtAddress.on('input', handleInput);
 
 /*===============================================================================
  * Functions
@@ -113,9 +116,9 @@ function handleSave(event) {
 
         /* There is no selected customer which means we need to save */
         customers.push({
-            id: txtId.value,
-            name: txtName.value,
-            address: txtAddress.value
+            id: txtId.val(),
+            name: txtName.val(),
+            address: txtAddress.val()
         });
 
         /* Let's initialize pagination */
@@ -124,18 +127,18 @@ function handleSave(event) {
         showOrHideTFoot();
 
         /* Let's ready for next entry */
-        txtId.value = '';
-        txtName.value = '';
-        txtAddress.value = '';
+        txtId.val('');
+        txtName.val('');
+        txtAddress.val('');
         txtId.focus();
 
     } else {
 
         /* There is a selected customer which means we need to update */
-        selectedCustomer.name = txtName.value;
-        selectedCustomer.address = txtAddress.value;
-        selectedRow.cells[1].innerText = txtName.value;
-        selectedRow.cells[2].innerText = txtAddress.value;
+        selectedCustomer.name = txtName.val();
+        selectedCustomer.address = txtAddress.val();
+        $(selectedRow.cells[1]).text(txtName.val());
+        $(selectedRow.cells[2]).text(txtAddress.val());
     }
 
 }
@@ -263,9 +266,10 @@ function renderPage(page) {
 
 function clearTable() {
 
+
     /* So let's delete all the current rows in the table from bottom to up */
-    for (var i = tblCustomers.tBodies[0].rows.length - 1; i >= 0; i--) {
-        tblCustomers.tBodies[0].deleteRow(i);
+    for (var i = tblCustomers.find('tr').length - 1; i >= 0; i--) {
+        tblCustomers.find('tr').remove();
     }
 }
 
@@ -280,14 +284,15 @@ function addCustomersToTable(startIndex, endIndex) {
     for (var i = startIndex; i < endIndex; i++) {
 
         /* Let's append a new row */
-        var row = tblCustomers.tBodies.item(0).insertRow(-1);
-        row.onclick = handleSelection;
+        var row = tblCustomers.prepend('<tr></tr>');
+        row.click(handleSelection);
 
         /* Let's add table data */
-        row.insertCell(0).innerText = customers[i].id;
+        row.append('<td>'+customers[i].id+'</td>'+'<td>'+customers[i].name+'</td>'+'<td>'+customers[i].address+'</td>'+'<td><div class="trash" onclick="handleDelete(event)"></div></td>');
+        /*row.insertCell(0).innerText = customers[i].id;
         row.insertCell(1).innerText = customers[i].name;
         row.insertCell(2).innerText = customers[i].address;
-        row.insertCell(3).innerHTML = '<div class="trash" onclick="handleDelete(event)"></div>';
+        row.insertCell(3).innerHTML = '<div class="trash" onclick="handleDelete(event)"></div>';*/
     }
 }
 
@@ -309,11 +314,11 @@ function toggleBackwardForwardDisability(page) {
 }
 
 function clearSelection() {
-    var rows = document.querySelectorAll("#tbl-customers tbody tr");
+    var rows = $("#tbl-customers tbody tr");
     for (var i = 0; i < rows.length; i++) {
-        rows[i].classList.remove('selected');
+        $(rows[i]).removeClass('selected');
     }
-    txtId.disabled = false;
+    txtId.prop('disabled',false);
     selectedRow = null;
     selectedCustomer = null;
 }
@@ -322,10 +327,10 @@ function handleSelection(event) {
     clearSelection();
     selectedRow = event.target.parentElement;
     selectedRow.classList.add('selected');
-    txtId.value = selectedRow.cells[0].innerText;
-    txtId.disabled = true;
-    txtName.value = selectedRow.cells[1].innerText;
-    txtAddress.value = selectedRow.cells[2].innerText;
+    txtId.val($(selectedRow.cells[0]).text());
+    txtId.prop('disabled',true);
+    txtName.val($(selectedRow.cells[1]).text());
+    txtAddress.val($(selectedRow.cells[2]).text());
     selectedCustomer = customers.find(function (c) {
         return c.id === selectedRow.cells[0].innerText;
     });
@@ -350,10 +355,10 @@ function handleDelete(event) {
 }
 
 function showOrHideTFoot() {
-    if (tblCustomers.tBodies.item(0).rows.length > 0) {
-        document.querySelector("#tbl-customers tfoot").classList.add('d-none');
+    if (tblCustomers.find('tr').length > 0) {
+        $("#tbl-customers tfoot").addClass('d-none');
     } else {
-        document.querySelector("#tbl-customers tfoot").classList.remove('d-none');
+        $("#tbl-customers tfoot").removeClass('d-none');
     }
 }
 
@@ -368,26 +373,26 @@ function validate() {
     var regExp = null;
     var validated = true;
 
-    txtId.classList.remove('is-invalid');
-    txtName.classList.remove('is-invalid');
-    txtAddress.classList.remove('is-invalid');
+    txtId.removeClass('is-invalid');
+    txtName.removeClass('is-invalid');
+    txtAddress.removeClass('is-invalid');
 
-    if (txtAddress.value.trim().length < 3) {
-        txtAddress.classList.add('is-invalid');
+    if (txtAddress.val().trim().length < 3) {
+        txtAddress.addClass('is-invalid');
         txtAddress.select();
         validated = false;
     }
 
     regExp = /^[A-Za-z][A-Za-z .]{3,}$/;
-    if (!regExp.test(txtName.value)) {
-        txtName.classList.add('is-invalid');
+    if (!regExp.test(txtName.val())) {
+        txtName.addClass('is-invalid');
         txtName.select();
         validated = false;
     }
 
     regExp = /^C\d{3}$/;
-    if (!regExp.test(txtId.value)) {
-        txtId.classList.add('is-invalid');
+    if (!regExp.test(txtId.val())) {
+        txtId.addClass('is-invalid');
         document.getElementById('helper-txt-id').classList.remove('text-muted');
         document.getElementById('helper-txt-id').classList.add('invalid-feedback');
         txtId.select();
@@ -396,10 +401,10 @@ function validate() {
 
     /* Let's find whether duplicate ids are there */
     if (customers.findIndex(function (c) {
-        return c.id === txtId.value
+        return c.id === txtId.val();
     }) !== -1) {
         alert("Duplicate Customer IDs are not allowed");
-        txtId.classList.add('is-invalid');
+        txtId.addClass('is-invalid');
         document.getElementById('helper-txt-id').classList.remove('text-muted');
         document.getElementById('helper-txt-id').classList.add('invalid-feedback');
         txtId.select();
@@ -408,3 +413,22 @@ function validate() {
 
     return validated;
 }
+
+/*var newData = [
+    ["John", "john@example.com", "(353) 01 222 3333"],
+    ["Mark", "mark@gmail.com", "(01) 22 888 4444"],
+    ["Eoin", "eoin@gmail.com", "0097 22 654 00033"],
+    ["Sarah", "sarahcdd@gmail.com", "+322 876 1233"],
+    ["Afshin", "afshin@mail.com", "(353) 22 87 8356"],
+];
+
+newData.push(['uvin','uvin6667@gmail.com','0711841300']);
+
+var table1= new gridjs.Grid({
+    columns: ["Name", "Email", "Phone Number"],
+    data: newData,
+    pagination:{
+        limit:5
+    }
+}).render(document.getElementById("table1"));*/
+
