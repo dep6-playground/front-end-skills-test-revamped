@@ -145,7 +145,7 @@ function handleSave(event) {
 
 function initPagination() {
 
-    var paginationElm = document.querySelector("#pagination");
+    var paginationElm = $("#pagination");
 
     /* Let's calculate the page size */
     pageSize = -1;
@@ -161,9 +161,16 @@ function initPagination() {
             addCustomersToTable(0, 1);
 
             /* Let's get necessary coordinates and dimensions */
+/*
             var topPos = tblCustomers.tBodies[0].rows[0].getBoundingClientRect().top;
+*/
+
+            var topPos = $($($('#tbl-customers tbody')[0]).find('tr')[0]).offset().top;
+/*
             var rowHeight = tblCustomers.tBodies[0].rows[0].clientHeight;
-            var paginationHeight = paginationElm.clientHeight;
+*/
+            var rowHeight = $($($('#tbl-customers tbody')[0]).find('tr')[0]).height();
+            var paginationHeight = paginationElm.height();
             var margin = 40;
             var i = 1;
 
@@ -171,7 +178,7 @@ function initPagination() {
             do {
                 var totalHeight = topPos + (rowHeight * i) + paginationHeight + margin;
                 i++;
-            } while (totalHeight < document.querySelector("footer").getBoundingClientRect().top);
+            } while (totalHeight < $("footer").offset().top);
 
             /* Since this do while loop, you gonna need to subtract two at the end */
             pageSize = i - 2;
@@ -190,9 +197,9 @@ function initPagination() {
 
     /* Let's determine whether we display the pagination or not */
     if (pageCount > 1) {
-        paginationElm.classList.remove("hidden");
+        paginationElm.removeClass("hidden");
     } else {
-        paginationElm.classList.add('hidden');
+        paginationElm.addClass('hidden');
     }
 
     if (endPageIndex === -1) {
@@ -284,11 +291,13 @@ function addCustomersToTable(startIndex, endIndex) {
     for (var i = startIndex; i < endIndex; i++) {
 
         /* Let's append a new row */
-        var row = tblCustomers.prepend('<tr></tr>');
+        var row = $('#tbl-customers tbody').prepend(`<tr><td>${customers[i].id}</td><td>${customers[i].name}</td><td>${customers[i].address}</td><td><div class="trash" onclick="handleDelete(event)"></div></td></tr>`);
         row.click(handleSelection);
 
         /* Let's add table data */
+/*
         row.append('<td>'+customers[i].id+'</td>'+'<td>'+customers[i].name+'</td>'+'<td>'+customers[i].address+'</td>'+'<td><div class="trash" onclick="handleDelete(event)"></div></td>');
+*/
         /*row.insertCell(0).innerText = customers[i].id;
         row.insertCell(1).innerText = customers[i].name;
         row.insertCell(2).innerText = customers[i].address;
@@ -300,16 +309,16 @@ function toggleBackwardForwardDisability(page) {
 
     /* If the page is the first most page then there is no point of having backward button */
     if (page == 1) {
-        document.querySelector("#btn-backward").classList.add("disabled");
+        $("#btn-backward").addClass("disabled");
     } else {
-        document.querySelector("#btn-backward").classList.remove("disabled");
+        $("#btn-backward").removeClass("disabled");
     }
 
     /* If the page is the last most page then there is no point of having forward button */
     if (page == pageCount) {
-        document.querySelector("#btn-forward").classList.add("disabled");
+        $("#btn-forward").addClass("disabled");
     } else {
-        document.querySelector("#btn-forward").classList.remove("disabled");
+        $("#btn-forward").removeClass("disabled");
     }
 }
 
@@ -325,14 +334,14 @@ function clearSelection() {
 
 function handleSelection(event) {
     clearSelection();
-    selectedRow = event.target.parentElement;
-    selectedRow.classList.add('selected');
-    txtId.val($(selectedRow.cells[0]).text());
+    selectedRow = $(event.target).parent();
+    selectedRow.addClass('selected');
+    txtId.val($(selectedRow.find('td')[0]).text());
     txtId.prop('disabled',true);
-    txtName.val($(selectedRow.cells[1]).text());
-    txtAddress.val($(selectedRow.cells[2]).text());
+    txtName.val($(selectedRow.find('td')[1]).text());
+    txtAddress.val($(selectedRow.find('td')[2]).text());
     selectedCustomer = customers.find(function (c) {
-        return c.id === selectedRow.cells[0].innerText;
+        return c.id ===$( selectedRow.find('td')[0]).text();
     });
 }
 
@@ -363,7 +372,7 @@ function showOrHideTFoot() {
 }
 
 function handleInput(event) {
-    this.classList.remove('is-invalid');
+    $(this).removeClass('is-invalid');
 }
 
 function validate() {
@@ -393,8 +402,8 @@ function validate() {
     regExp = /^C\d{3}$/;
     if (!regExp.test(txtId.val())) {
         txtId.addClass('is-invalid');
-        document.getElementById('helper-txt-id').classList.remove('text-muted');
-        document.getElementById('helper-txt-id').classList.add('invalid-feedback');
+        $('helper-txt-id').removeClass('text-muted');
+        $('helper-txt-id').addClass('invalid-feedback');
         txtId.select();
         validated = false;
     }
@@ -405,8 +414,8 @@ function validate() {
     }) !== -1) {
         alert("Duplicate Customer IDs are not allowed");
         txtId.addClass('is-invalid');
-        document.getElementById('helper-txt-id').classList.remove('text-muted');
-        document.getElementById('helper-txt-id').classList.add('invalid-feedback');
+        $('helper-txt-id').removeClass('text-muted');
+        $('helper-txt-id').addClass('invalid-feedback');
         txtId.select();
         validated = false;
     }
