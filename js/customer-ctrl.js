@@ -161,14 +161,9 @@ function initPagination() {
             addCustomersToTable(0, 1);
 
             /* Let's get necessary coordinates and dimensions */
-/*
-            var topPos = tblCustomers.tBodies[0].rows[0].getBoundingClientRect().top;
-*/
+
 
             var topPos = $($($('#tbl-customers tbody')[0]).find('tr')[0]).offset().top;
-/*
-            var rowHeight = tblCustomers.tBodies[0].rows[0].clientHeight;
-*/
             var rowHeight = $($($('#tbl-customers tbody')[0]).find('tr')[0]).height();
             var paginationHeight = paginationElm.height();
             var margin = 40;
@@ -220,7 +215,7 @@ function initPagination() {
     html += '<li class="page-item" id="btn-forward">' +
         '          <a class="page-link" href="#"><i class="fas fa-forward"></i></a>' +
         '    </li>';
-    document.querySelector(".pagination").innerHTML = html;
+    $(".pagination").html(html);
     endPageIndex = -1;
 }
 
@@ -239,9 +234,9 @@ function renderPage(page) {
     }
 
     /* Let's remove active status of the previous page */
-    var exActivePage = document.querySelector("#pagination .page-item.active");
+    var exActivePage = $("#pagination .page-item.active");
     if (exActivePage !== null) {
-        exActivePage.classList.remove('active');
+        exActivePage.removeClass('active');
     }
 
     /* Let's set the active status to the current page
@@ -256,7 +251,7 @@ function renderPage(page) {
      * </ul>
      *  */
 
-    document.querySelector('.pagination li:nth-child(' + (page + 1) + ')').classList.add('active');
+    $('.pagination li:nth-child(' + (page + 1) + ')').addClass('active');
 
     /* Let's check whether we want to disable backward button or forward button */
     toggleBackwardForwardDisability(page);
@@ -291,8 +286,9 @@ function addCustomersToTable(startIndex, endIndex) {
     for (var i = startIndex; i < endIndex; i++) {
 
         /* Let's append a new row */
-        var row = $('#tbl-customers tbody').prepend(`<tr><td>${customers[i].id}</td><td>${customers[i].name}</td><td>${customers[i].address}</td><td><div class="trash" onclick="handleDelete(event)"></div></td></tr>`);
+        var row = $('table tbody').append(`<tr><td>${customers[i].id}</td><td>${customers[i].name}</td><td>${customers[i].address}</td><td><div class="trash" onclick="handleDelete(event)"></div></td></tr>`);
         row.click(handleSelection);
+
 
         /* Let's add table data */
 /*
@@ -423,21 +419,5 @@ function validate() {
     return validated;
 }
 
-/*var newData = [
-    ["John", "john@example.com", "(353) 01 222 3333"],
-    ["Mark", "mark@gmail.com", "(01) 22 888 4444"],
-    ["Eoin", "eoin@gmail.com", "0097 22 654 00033"],
-    ["Sarah", "sarahcdd@gmail.com", "+322 876 1233"],
-    ["Afshin", "afshin@mail.com", "(353) 22 87 8356"],
-];
 
-newData.push(['uvin','uvin6667@gmail.com','0711841300']);
-
-var table1= new gridjs.Grid({
-    columns: ["Name", "Email", "Phone Number"],
-    data: newData,
-    pagination:{
-        limit:5
-    }
-}).render(document.getElementById("table1"));*/
 
